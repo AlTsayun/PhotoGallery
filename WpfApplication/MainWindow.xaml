@@ -3,21 +3,35 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:WpfApplication"
-        xmlns:forms="clr-namespace:System.Windows.Forms;assembly=System.Windows.Forms"
         mc:Ignorable="d"
-        Title="PhotoGallery" Height="600" Width="800">
+        Title="PhotoGallery" Height="600" Width="800"
+        >
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition></ColumnDefinition>
             <ColumnDefinition Width="250"></ColumnDefinition>
         </Grid.ColumnDefinitions>
-        <GroupBox Grid.Column="0" Header="Image preview" Padding="10">
-            <forms:PictureBox Name="pictureBox" SizeMode="StretchImage" Dock="Fill" Anchor="Bottom, Top, Left">
-                
-            </forms:PictureBox>
+        <GroupBox Grid.Column="0" Header="Image preview" Padding="20">
+            <Border 
+                Name="canvasBorder"
+                    >
+                <Canvas Name="canvasWithImage" 
+                        Drop="CanvasWithImage_OnDrop" AllowDrop="True"
+                        Background="Silver"
+                >
+                    <Image Name="viewedImage"
+                           VerticalAlignment="Stretch"
+                           HorizontalAlignment="Stretch"
+                           RenderOptions.BitmapScalingMode="Fant"
+                           Stretch="Fill"
+                    >
+                    </Image>
+                </Canvas>
+            </Border>
         </GroupBox>
-        <GroupBox Grid.Column="1" Header="Edit" Padding="10">
+        <GroupBox Grid.Column="1" Header="Edit" Padding="10" 
+                  Background="White"
+                  >
             <Grid >
                 <Grid.RowDefinitions >
                     <RowDefinition Height="30"></RowDefinition>
@@ -30,10 +44,10 @@
                     <RowDefinition Height="50"></RowDefinition>
                 </Grid.RowDefinitions>
                 
-                <Button Name="openFile" Grid.Row="0" Click="Control_OnOpenFileClick">
+                <Button Name="btnOpenFile" Grid.Row="0" Click="Control_OnOpenFileClick">
                     🗁 Open file
                 </Button>                
-                <Button Name="saveFile" Grid.Row="1" Click="Control_OnSaveFileClick">
+                <Button Name="btnSaveFile" Grid.Row="1" Click="Control_OnSaveFileClick">
                     🖫 Save file
                 </Button>
 
@@ -44,63 +58,48 @@
                             <ColumnDefinition Width="Auto"></ColumnDefinition>
                         </Grid.ColumnDefinitions>
                         <Slider Grid.Column="0" Name="rotateImageSlider" 
+                                ValueChanged="RotateImageSlider_OnValueChanged"
                                 VerticalAlignment="Center"
                                 Minimum="-180" 
                                 Maximum="+180" 
                                 SelectionStart="0"
                                 ></Slider>
-                        <Button Grid.Column="1" 
-                                Width="20" 
-                                FontSize="18" 
-                                VerticalContentAlignment="Center"
-                                Click="resetRotation"
-                                >
-                            ↺
-                        </Button>
                     </Grid>
                 </GroupBox>
         
-                <!-- <GroupBox Grid.Row="3" Header="" BorderThickness="0" > -->
-                <!--     <Grid> -->
-                <!--         <Grid.ColumnDefinitions> -->
-                <!--             <ColumnDefinition></ColumnDefinition> -->
-                <!--             <ColumnDefinition Width="Auto"></ColumnDefinition> -->
-                <!--         </Grid.ColumnDefinitions> -->
-                <!--         <Slider Grid.Column="0" Name="rotateImageSlider"  -->
-                <!--                 VerticalAlignment="Center" -->
-                <!--                 Minimum="-180"  -->
-                <!--                 Maximum="+180"  -->
-                <!--                 SelectionStart="0" -->
-                <!--         ></Slider> -->
-                <!--         <Button Grid.Column="1"  -->
-                <!--                 Width="20"  -->
-                <!--                 FontSize="18"  -->
-                <!--                 VerticalContentAlignment="Center" -->
-                <!--         > -->
-                <!--             ↺ -->
-                <!--         </Button> -->
-                <!--     </Grid> -->
-                <!-- </GroupBox> -->
-                <GroupBox Grid.Row="4" Header="Brightness" BorderThickness="0" >
+                <GroupBox Grid.Row="3" Header="Brightness" BorderThickness="0" >
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition></ColumnDefinition>
                             <ColumnDefinition Width="Auto"></ColumnDefinition>
                         </Grid.ColumnDefinitions>
-                        <Slider Grid.Column="0" Name="changeBrightnessSlider" 
+                        <Slider Grid.Column="0" Name="brightnessSlider"
                                 VerticalAlignment="Center"
-                                Minimum="-180" 
-                                Maximum="+180" 
+                                Minimum="-255"
+                                Maximum="255"
                                 SelectionStart="0"
+                                TickFrequency="1"
+                                IsSnapToTickEnabled="True"
+                                ValueChanged="BrightnessSlider_OnValueChanged"
                         ></Slider>
-                        <Button Grid.Column="1" 
-                                Width="20" 
-                                FontSize="18" 
-                                VerticalContentAlignment="Center"
-                                Click="resetBrightness"
-                            >
-                            ↺
-                        </Button>
+                    </Grid>
+                </GroupBox>
+                
+                <GroupBox Grid.Row="4" Header="Adjust image colors" BorderThickness="0" >
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition></ColumnDefinition>
+                            <ColumnDefinition Width="Auto"></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+                        <Slider Grid.Column="0" Name="adjustColorsSlider" 
+                                VerticalAlignment="Center"
+                                Minimum="0" 
+                                Maximum="+360" 
+                                SelectionStart="0"
+                                TickFrequency="1"
+                                IsSnapToTickEnabled="True"
+                                ValueChanged="AdjustColorsSlider_OnValueChanged"
+                        ></Slider>
                     </Grid>
                 </GroupBox>
                 
@@ -110,43 +109,27 @@
                             <ColumnDefinition></ColumnDefinition>
                             <ColumnDefinition Width="Auto"></ColumnDefinition>
                         </Grid.ColumnDefinitions>
-                        <Slider Grid.Column="0" Name="changeContrastSlider" 
+                        <Slider Grid.Column="0" Name="contrastSlider" 
                                 VerticalAlignment="Center"
-                                Minimum="-180" 
-                                Maximum="+180" 
+                                Minimum="-100" 
+                                Maximum="+100" 
                                 SelectionStart="0"
+                                TickFrequency="1"
+                                IsSnapToTickEnabled="True"
+                                ValueChanged="ContrastSlider_OnValueChanged"
                         ></Slider>
-                        <Button Grid.Column="1" 
-                                Width="20" 
-                                FontSize="18" 
-                                VerticalContentAlignment="Center"
-                                Click="resetContrast"
-                        >
-                            ↺
-                        </Button>
                     </Grid>
                 </GroupBox>
                 
                 <GroupBox Grid.Row="6" Header="Scale" BorderThickness="0" >
                     <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition></ColumnDefinition>
-                            <ColumnDefinition Width="Auto"></ColumnDefinition>
-                        </Grid.ColumnDefinitions>
-                        <Slider Grid.Column="0" Name="changeScaleSlider" 
+                        <Slider Name="scaleSlider" 
                                 VerticalAlignment="Center"
-                                Minimum="-180" 
-                                Maximum="+180" 
+                                Minimum="-5" 
+                                Maximum="10" 
                                 SelectionStart="0"
+                                ValueChanged="ScaleSlider_OnValueChanged"
                         ></Slider>
-                        <Button Grid.Column="1" 
-                                Width="20" 
-                                FontSize="18" 
-                                VerticalContentAlignment="Center"
-                                Click="resetScale"
-                        >
-                            ↺
-                        </Button>
                     </Grid>
                 </GroupBox>
                 <GroupBox Grid.Row="7" Header="Drawing" BorderThickness="0" >
@@ -155,8 +138,9 @@
                             <ColumnDefinition></ColumnDefinition>
                             <ColumnDefinition></ColumnDefinition>
                         </Grid.ColumnDefinitions>
-                        <Button Grid.Column="0">Pencil ✎</Button>
-                        <Button Grid.Column="1">Eraser ✐</Button>
+                        
+                        <ToggleButton Name="btnDraw" Grid.Column="0" Checked="BtnDraw_OnChecked" Unchecked="BtnDraw_OnUnchecked">Pencil ✎</ToggleButton>
+                        <ToggleButton Name="btnErase" Grid.Column="1" Checked="BtnErase_OnChecked" Unchecked="BtnErase_OnUnchecked">Eraser ✐</ToggleButton>
                     </Grid>
                 </GroupBox>
             </Grid>
